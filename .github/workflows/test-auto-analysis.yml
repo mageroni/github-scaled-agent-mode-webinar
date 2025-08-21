@@ -121,9 +121,10 @@ jobs:
         }
         EOF
         # Run ESLint on the temporary file to trigger linting errors
-        npx eslint frontend/src/temp-lint-errors.tsx || echo "Linting errors detected as expected"
+        cd frontend && npx eslint src/temp-lint-errors.tsx || echo "Linting errors detected as expected"
         # Clean up the temporary file
-        rm -f frontend/src/temp-lint-errors.tsx
+        rm -f src/temp-lint-errors.tsx
+        cd ..
         # Exit with error to simulate linting failure
         exit 1
     
@@ -148,3 +149,15 @@ jobs:
         else
           echo "✅ Repository is clean - no files were polluted by failure simulation"
         fi
+    
+    - name: Summary of intentional failure
+      if: always()
+      run: |
+        echo "🎯 INTENTIONAL FAILURE SIMULATION COMPLETE"
+        echo "================================================"
+        echo "This workflow is designed to fail on purpose to test"
+        echo "the auto-analysis system. The failure is NOT a real bug!"
+        echo ""
+        echo "✅ Repository state: Clean (no files modified)"
+        echo "✅ Simulation type: ${{ github.event.inputs.failure_type }}"
+        echo "✅ Auto-analysis should create an issue for this failure"
