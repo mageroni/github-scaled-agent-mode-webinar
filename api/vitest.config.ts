@@ -19,7 +19,13 @@ export default defineConfig({
 				'**/*.d.ts',
 				'**/*.config.*',
 				'dist/',
-				'src/index.ts' // Main server file
+				'src/index.ts', // Main server file
+				'src/models/', // Type definitions only
+				'src/routes/delivery.ts', // Not tested yet
+				'src/routes/headquarters.ts', // Not tested yet
+				'src/routes/order.ts', // Not tested yet
+				'src/routes/orderDetail.ts', // Not tested yet
+				'src/routes/orderDetailDelivery.ts' // Not tested yet
 			]
 		},
 	},

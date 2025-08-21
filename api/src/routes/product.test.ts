@@ -122,4 +122,29 @@ describe('Product API', () => {
             expect([200, 201, 400]).toContain(response.status);
         }
     });
+
+    it('should delete a product by ID', async () => {
+        // First create a product to delete
+        const productToDelete = {
+            productId: 1003,
+            supplierId: 1,
+            name: "Product to Delete",
+            description: "This product will be deleted",
+            price: 50.00,
+            sku: "DELETE-001",
+            unit: "piece",
+            imgName: "delete.png"
+        };
+        
+        const createResponse = await request(app).post('/products').send(productToDelete);
+        expect(createResponse.status).toBe(201);
+        
+        // Now delete it
+        const deleteResponse = await request(app).delete('/products/1003');
+        expect(deleteResponse.status).toBe(204);
+        
+        // Verify it's gone
+        const getResponse = await request(app).get('/products/1003');
+        expect(getResponse.status).toBe(404);
+    });
 });

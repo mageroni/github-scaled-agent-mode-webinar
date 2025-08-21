@@ -50,7 +50,18 @@ describe('ProductForm Component', () => {
       />
     );
     
-    expect(screen.getByDisplayValue('') || screen.getByLabelText(/name/i) || screen.getByPlaceholderText(/name/i)).toBeInTheDocument();
+    // Check for form existence and basic structure
+    expect(screen.getByRole('form') || screen.getByText(/add new product/i)).toBeInTheDocument();
+    
+    // Check for form inputs exist
+    const textInputs = screen.getAllByRole('textbox');
+    expect(textInputs.length).toBeGreaterThan(0);
+    
+    const numberInputs = screen.getAllByRole('spinbutton');
+    expect(numberInputs.length).toBeGreaterThan(0);
+    
+    // Check for supplier dropdown
+    expect(screen.getByRole('combobox')).toBeInTheDocument();
   });
 
   it('renders save and cancel buttons', () => {
