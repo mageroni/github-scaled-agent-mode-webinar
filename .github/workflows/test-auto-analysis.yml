@@ -1,5 +1,9 @@
 name: Test Auto-Analysis (Intentional Failure)
 
+# This workflow intentionally simulates various types of build failures
+# to test the auto-analysis system. It does NOT indicate a real problem.
+# All simulations use temporary files to avoid polluting the repository.
+
 on:
   workflow_dispatch:
     inputs:
@@ -36,15 +40,27 @@ jobs:
       if: github.event.inputs.failure_type == 'compilation_error'
       run: |
         echo "Simulating TypeScript compilation error..."
-        echo "export const invalidSyntax = function( { return 'broken'; }" >> api/src/index.ts
-        npm run build --workspace=api
+        # Create a temporary file with invalid TypeScript syntax
+        cat > api/src/temp-invalid.ts << 'EOF'
+        export const invalidSyntax = function( { return 'broken'; }
+        // This file intentionally contains syntax errors for testing
+        export const anotherError = class {
+          constructor( {
+            // Missing closing parenthesis and brackets
+        EOF
+        # Try to compile the invalid file to trigger TypeScript errors
+        npx tsc api/src/temp-invalid.ts --noEmit || echo "TypeScript compilation failed as expected"
+        # Remove the temporary file to keep repository clean
+        rm -f api/src/temp-invalid.ts
+        # Exit with error to simulate build failure
+        exit 1
     
     - name: Simulate test failure
       if: github.event.inputs.failure_type == 'test_failure'
       run: |
         echo "Simulating test failure..."
-        # Create a failing test
-        cat > api/src/test-failure.test.ts << 'EOF'
+        # Create a failing test in a temporary file
+        cat > api/src/temp-failure.test.ts << 'EOF'
         import { describe, it, expect } from 'vitest';
         
         describe('Intentional Test Failure', () => {
@@ -53,7 +69,12 @@ jobs:
           });
         });
         EOF
-        npm run test --workspace=api
+        # Run vitest on the specific test file to trigger failure
+        npx vitest run api/src/temp-failure.test.ts || echo "Test failed as expected"
+        # Clean up the temporary test file
+        rm -f api/src/temp-failure.test.ts
+        # Exit with error to simulate test failure
+        exit 1
     
     - name: Simulate dependency issue
       if: github.event.inputs.failure_type == 'dependency_issue'
@@ -86,5 +107,44 @@ jobs:
       if: github.event.inputs.failure_type == 'linting_error'
       run: |
         echo "Simulating ESLint errors..."
-        echo "var unused_variable = 'this will cause linting errors';;;" >> frontend/src/App.tsx
-        npm run lint --workspace=frontend
+        # Create a temporary file with linting violations
+        cat > frontend/src/temp-lint-errors.tsx << 'EOF'
+        // This file intentionally contains linting errors for testing
+        var unused_variable = 'this will cause linting errors';;;
+        const another_unused = "test"
+        let   badly_spaced =    "variable"  ;;
+        
+        export function BadComponent() {
+          var x = 1
+          console.log("Should not use console.log")
+          return <div>Bad linting example</div>
+        }
+        EOF
+        # Run ESLint on the temporary file to trigger linting errors
+        npx eslint frontend/src/temp-lint-errors.tsx || echo "Linting errors detected as expected"
+        # Clean up the temporary file
+        rm -f frontend/src/temp-lint-errors.tsx
+        # Exit with error to simulate linting failure
+        exit 1
+    
+    - name: Cleanup temporary files
+      if: always()
+      run: |
+        echo "Cleaning up any remaining temporary files..."
+        rm -f api/src/temp-*.ts
+        rm -f api/src/temp-*.test.ts
+        rm -f frontend/src/temp-*.tsx
+        rm -f temp-package.json
+        echo "Cleanup completed"
+    
+    - name: Verify repository is clean
+      if: always()
+      run: |
+        echo "Verifying repository state is clean..."
+        git status --porcelain
+        if [ -n "$(git status --porcelain)" ]; then
+          echo "❌ Warning: Repository has uncommitted changes after cleanup"
+          git status
+        else
+          echo "✅ Repository is clean - no files were polluted by failure simulation"
+        fi
