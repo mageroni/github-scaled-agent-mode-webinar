@@ -25,7 +25,7 @@
 #
 # Source: github/gh-aw/.github/workflows/ci-doctor.md@94662b1dee8ce96c876ba9f33b3ab8be32de82a4
 #
-# frontmatter-hash: 2f739fbf45da03b574a3911400c281453147920a985a5eb7c6eb3ac03e2edb73
+# frontmatter-hash: b1000d00f0690aac6c45633aa39d1c8172eaf63171101d5e9da5fc45c2ad7ce8
 #
 # Effective stop-time: 2026-03-17 02:14:41
 
@@ -39,6 +39,7 @@ name: "CI Failure Doctor"
     - completed
     workflows:
     - CI
+    - test-auto-analysis
 
 permissions: {}
 
