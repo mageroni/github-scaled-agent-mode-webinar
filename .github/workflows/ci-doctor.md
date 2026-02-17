@@ -8,6 +8,7 @@ on:
     - completed
     workflows:
     - CI
+    - test-auto-analysis
 permissions:
   actions: read
   contents: read
