@@ -15,8 +15,6 @@ permissions:
   pull-requests: read
 if: ${{ github.event.workflow_run.conclusion == 'failure' }}
 network: defaults
-imports:
-- github/gh-aw/workflows/shared/mood.md@d6cbdd249d912f2cc1e90e85609e95a39927d9b3
 safe-outputs:
   add-comment: null
   create-issue:
