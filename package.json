@@ -16,10 +16,19 @@
     "test": "npm run test --workspaces",
     "test:api": "npm run test --workspace=api",
     "test:frontend": "npm run test --workspace=frontend",
+    "test:coverage": "npm run test:coverage --workspaces",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:report": "playwright show-report",
+    "test:install-playwright": "playwright install --with-deps",
+    "test:bdd": "cucumber-js tests/bdd/features --require-module ts-node/register --require tests/bdd/steps/**/*.ts --require tests/bdd/support/**/*.ts",
     "lint": "npm run lint --workspace=frontend"
   },
   "devDependencies": {
-    "concurrently": "^6.2.1"
+    "@cucumber/cucumber": "^12.1.0",
+    "@playwright/test": "^1.55.0",
+    "concurrently": "^6.2.1",
+    "fast-check": "^4.2.0"
   },
   "license": "MIT",
   "engines": {
