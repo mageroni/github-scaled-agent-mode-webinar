@@ -60,4 +60,4 @@ El issue debe incluir:
 
 - Si no hay alertas nuevas en las últimas 24 horas, no crear issue (usar `noop`).
 - Incluir únicamente alertas con estado `open`.
-- Usar íconos de severidad: 🔴 Critical, 🟠 High, 🟡 Medium, 🔵 Low, ⚪ Unknown.
+- Usar etiquetas de severidad con íconos: 🔴 **Critical**, 🟠 **High**, 🟡 **Medium**, 🔵 **Low**, ⚪ **Unknown**.
